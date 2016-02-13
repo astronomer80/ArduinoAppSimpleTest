@@ -1,8 +1,12 @@
 package org.arduino.arduino;
 
+import android.app.ListActivity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +16,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 public class CommandsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,6 +51,76 @@ public class CommandsActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        ListView lv = (ListView)findViewById(R.id.listView);
+
+        /*
+        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
+                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
+                "Linux", "OS/2" };
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, values);
+        lv.setAdapter(adapter);*/
+    }
+
+    public View getView(int position, View convertView, final ViewGroup parent) {
+        View v = convertView;
+        final int pos=position;
+
+        if(convertView==null){
+            LayoutInflater linf=(LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            v=linf.inflate(R.layout.activity_single_option,null);
+        }
+        soa=getItem(position);
+
+        TextView textView=(TextView)v.findViewById(R.id.singleOptionTextView);
+        textView.setText(soa.getTitle());
+
+        SeekBar seekBar=(SeekBar)v.findViewById(R.id.singleOptionSeekBar);
+        seekBar.setMax(soa.getSeekBarMax());
+        seekBar.setProgress(soa.getValue());
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            SingleOptionActivity soa = getItem(pos);
+            int prog = 0;
+
+            boolean status;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                prog = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Log.d("onStopTrackingTouch", soa.getTitle());
+                switch (soa.getTitle()) {
+                    case "Brillo":
+                        //systemManager.setBrightness(prog);
+                        break;
+                    case "WIFI":
+                        status = prog == 1;
+                        //systemManager.toggleWifi(status);
+                        break;
+                    case "Datos Moviles":
+                        status = prog == 1;
+                        //systemManager.toggleMobileData(status);
+                        break;
+                    case "Bluetooth":
+                        status = prog == 1;
+                        //systemManager.toggleBluetooth(status);
+                        break;
+                }
+
+            }
+        });
+
+        return v;
     }
 
     @Override
